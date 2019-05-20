@@ -1,0 +1,16 @@
+doctype html
+html
+  head
+    title= title
+    link(rel='stylesheet', href='/stylesheets/style.css')
+    script(src='/javascripts/socket.io.js')
+  body
+    script.
+      var socket = io('/server');
+      socket.on('test', function(data){
+        var node = document.createElement("LI");                 // Create a <li> node
+        var textnode = document.createTextNode("Ngày: "+new Date()+" ----------- Độ ẩm: "+data);         // Create a text node
+        node.appendChild(textnode);                              // Append the text to <li>
+        document.getElementById("list").appendChild(node);     // Append <li> to <ul> with id="myList"
+      })
+    block content
