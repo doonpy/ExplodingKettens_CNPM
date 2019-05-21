@@ -3,14 +3,12 @@ html
   head
     title= title
     link(rel='stylesheet', href='/stylesheets/style.css')
-    script(src='/javascripts/socket.io.js')
+    link(rel='stylesheet', href='/stylesheets/bootstrap-4.3.1/bootstrap.min.css')
+    script(src='/javascripts/bootstrap-4.3.1/bootstrap.min.js')
+    script(src='/javascripts/bootstrap-4.3.1/bootstrap.bundle.min.js')
+    script(src="https://canvasjs.com/assets/script/canvasjs.min.js")
+    script(src='/socket.io/socket.io.js')
+    script(src='javascripts/jquery-3.4.1.js')
+    script(src='javascripts/index.js')
   body
-    script.
-      var socket = io('/server');
-      socket.on('test', function(data){
-        var node = document.createElement("LI");                 // Create a <li> node
-        var textnode = document.createTextNode("Ngày: "+new Date()+" ----------- Độ ẩm: "+data);         // Create a text node
-        node.appendChild(textnode);                              // Append the text to <li>
-        document.getElementById("list").appendChild(node);     // Append <li> to <ul> with id="myList"
-      })
     block content

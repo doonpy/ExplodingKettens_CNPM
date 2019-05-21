@@ -9,6 +9,15 @@ var usersRouter = require('./routes/users');
 
 var app = express();
 
+//Thiết lập kêt nối tới Mongoose
+var mongoose = require('mongoose');
+mongoose.set('useFindAndModify', false);
+var mongoDB = "mongodb+srv://exkts:exkts@pokebiz-exjmn.azure.mongodb.net/explodingkettens?retryWrites=true";
+mongoose.connect(mongoDB, { useNewUrlParser: true });
+mongoose.Promise = global.Promise;
+var db = mongoose.connection;
+db.on('error', console.error.bind(console, 'MongoDB connection error:'));
+
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');

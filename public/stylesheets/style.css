@@ -6,3 +6,8 @@ body {
 a {
   color: #00B7FF;
 }
+
+#list {
+  overflow: scroll;
+  height: 30vmax;
+}

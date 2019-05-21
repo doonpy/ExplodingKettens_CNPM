@@ -2,8 +2,20 @@ extends layout
 
 block content
   h1= title
-  p Welcome to Exploding Kettens
-  ul#list
-    
+  p.display-4 Danh sách độ ẩm theo thời gian
+  .row
+    .col-4
+      ul#list
+        each val, index in mositureList
+          li.row #{index+1}.&nbsp; 
+            p Thời gian:&nbsp;
+            p #{val.date_formatted}
+            p &nbsp;---&nbsp;
+            p  Độ ẩm:&nbsp;
+            p #{val.value}
+            p %
+            p(style="display:none") #{val.date}
+    .col
+      #chartContainer(style="height: 370px; width:100%;")
 
 

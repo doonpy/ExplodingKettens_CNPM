@@ -1,9 +1,8 @@
 var express = require('express');
 var router = express.Router();
+var mositureController = require('../controllers/mositureController');
 
 /* GET home page. */
-router.get('/', function(req, res, next) {
-  res.render('index', { title: 'Express' });
-});
+router.get('/', mositureController.listMositure);
 
 module.exports = router;
