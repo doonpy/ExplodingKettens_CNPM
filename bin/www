@@ -92,49 +92,5 @@ function onListening() {
 
 
 //============================================= SOCKET SERVER =====================================================
-// var server = require('http').createServer(app).listen(app.get('port'), function () {
-//   console.log("--> PORT: " + app.get('port'));
-// });
 
-var ip = require('ip')
-var io = require('socket.io')(server);					  //#Phải khởi tạo io sau khi tạo app!
-console.log("--> Địa chỉ server: " + ip.address())
-var mositureController = require('../controllers/mositureController')
-
-
-//Namespace là Server
-var device = io.on('connection', function (socket) {
-
-  console.log("--> Connected - Device: " + socket.id); //In ra màn hình console là đã có một Socket Client kết nối thành công.
-
-  //lấy dữ liệu độ ẩm
-  socket.on('resMositure', function (data) {
-    var moment = require('moment');
-    //Nhận được thì in ra thôi hihi.
-    console.log(data);
-    mositureController.addMositure(new Date(), data.mositure);
-    socketServer.emit('getMositure', { date: new Date(), date_formatted: moment(new Date).format("HH:mm:ss DD/MM/YYYY"), value: data.mositure });
-  })
-
-  // var loop = setInterval(function () {
-  //   socket.emit('getMosi', { msg: "null" });
-  //   console.log('Gửi request')
-  // }, 1000)
-  //Khi socket client bị mất kết nối thì chạy hàm sau.
-  socket.on('disconnect', function () {
-    console.log("--> Disconnected - Device: " + socket.id) 	//in ra màn hình console cho vui
-  })
-});
-
-
-//Namespace là Server
-var socketServer = io.of('/server')
-  .on('connection', function (socket) {
-    console.log("--> Connected - Server: " + socket.id);
-
-    socket.on('disconnect', function () {
-      console.log("--> Disconnected - Server: " + socket.id) 	//in ra màn hình console cho vui
-
-    })
-  });
-
+require('../socketIO')(server);

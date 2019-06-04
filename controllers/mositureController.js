@@ -10,6 +10,7 @@ exports.listMositure = function (req, res, next) {
     })
 }
 
+//add
 exports.addMositure = async function (date, value) {
     var mositure = new Mositure({
         date: date,
@@ -25,4 +26,20 @@ exports.addMositure = async function (date, value) {
         throw err;
     }
 
+}
+
+//clear alls
+exports.clearDb = (req, res, next) => {
+    Mositure.deleteMany().exec((err => {
+        if (err) return next(err);
+        res.json({ msg: "Success" });
+    }))
+}
+
+//get Mositure API
+exports.getMositure_API = (req, res, next) => {
+    Mositure.find().exec((err, data) => {
+        if (err) return next(err);
+        res.json(data);
+    })
 }
