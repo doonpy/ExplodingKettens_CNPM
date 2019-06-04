@@ -35,17 +35,15 @@ function socketIO(server) {
         .on('connection', function (socket) {
             console.log("--> Connected - Server: " + socket.id);
 
-            var loop = setInterval(async () => {
+            var loop = async () => {
                 let mositure = Math.floor((Math.random() * 100) + 1);
                 await mositureController.addMositure(new Date(), mositure);
                 socketServer.emit('getMositure', { date: new Date(), date_formatted: moment(new Date).format("HH:mm:ss DD/MM/YYYY"), value: mositure });
-            }, 5000)
-
-            socket.on('stopSimulator', () => {
-                clearInterval(loop);
-            })
+            }
+            setInterval(loop, 3000);
 
             socket.on('disconnect', function () {
+                clearInterval(loop);
                 console.log("--> Disconnected - Server: " + socket.id) 	//in ra màn hình console cho vui
 
             })

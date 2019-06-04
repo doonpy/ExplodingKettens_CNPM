@@ -75,16 +75,27 @@ $(document).ready(function () {
             url: "/cleardb",
             method: "POST"
         }).done(res => {
-            alert(`Sucesss: ${res.msg}`);
+            alert(`Messages: ${res.msg}`);
             location.reload();
         }).fail(err => {
-            alert(`Fail: ${err.statusText}`);
+            alert(`Messages: ${err.statusText}`);
         })
     })
 
     //Stop simulator
-    $("#stopSimulator").click(() => {
-        socket.emit('stopSimulator');
-        alert("Ok con dê!");
+    $("#switchCon").click(() => {
+        if (socket.connected) {
+            socket.disconnect();
+            $("#switchCon").removeClass('btn-dark');
+            $("#switchCon").addClass('btn-success');
+            $("#switchCon").text('Connect');
+        }
+        else {
+            socket.connect('/server');
+            $("#switchCon").addClass('btn-dark');
+            $("#switchCon").removeClass('btn-success');
+            $("#switchCon").text('Disconnect');
+        };
+        alert("Yep!");
     })
 });
