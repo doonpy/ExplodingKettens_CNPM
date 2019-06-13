@@ -14,14 +14,18 @@ function socketIO(server) {
 
         console.log("--> Connected - Device: " + socket.id);
 
-        //lấy dữ liệu độ ẩm
-        socket.on('resMositure', function (data) {
+        //lấy dữ liệu
+        socket.on('resInfomation', function (data) {
             //Nhận được thì in ra thôi hihi.
             console.log(data);
-            mositureController.addMositure(new Date(), data.mositure);
+            socketServer.emit('resInfomation', data);
+            // mositureController.addMositure(new Date(), data.mositure);
             socketServer.emit('getMositure', { date: new Date(), date_formatted: moment(new Date).format("HH:mm:ss DD/MM/YYYY"), value: data.mositure });
         })
 
+        socket.on("resResult", (data) => {
+            socketServer.emit('resResult', data);
+        });
 
         //Khi socket client bị mất kết nối thì chạy hàm sau.
         socket.on('disconnect', function () {
@@ -35,15 +39,22 @@ function socketIO(server) {
         .on('connection', function (socket) {
             console.log("--> Connected - Server: " + socket.id);
 
-            var loop = async () => {
-                let mositure = Math.floor((Math.random() * 100) + 1);
-                await mositureController.addMositure(new Date(), mositure);
-                socketServer.emit('getMositure', { date: new Date(), date_formatted: moment(new Date).format("HH:mm:ss DD/MM/YYYY"), value: mositure });
-            }
-            setInterval(loop, 3000);
+            socket.on('getInfomation', () => {
+                device.emit('getInfomation', '');
+            });
+
+            //Thay đổi chế độ tưới
+            socket.on('setPumbMode', () => {
+                device.emit('setPumbMode', '');
+            })
+
+            //Bật tắt máy bơm
+            socket.on('controlPumb', () => {
+                device.emit('controlPumb', '');
+            })
 
             socket.on('disconnect', function () {
-                clearInterval(loop);
+                // clearInterval(loop);
                 console.log("--> Disconnected - Server: " + socket.id) 	//in ra màn hình console cho vui
 
             })

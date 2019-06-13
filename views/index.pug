@@ -4,7 +4,7 @@ block content
   h1= title
   p.display-4 Danh sách độ ẩm theo thời gian
   .row
-    .col-4
+    .col-md-4
       ul#list
         each val, index in mositureList
           li.row #{index+1}.&nbsp; 
@@ -15,10 +15,25 @@ block content
             p #{val.value}
             p %
             p(style="display:none") #{val.date}
-    .col
+    .col-md
       #chartContainer(style="height: 370px; width:100%;")
       button#clearDB.btn.btn-danger.btn-block.mt-5 Clear DB
       button#switchCon.btn.btn-dark.btn-block.mt-3 Disconnect
+    .col-sm-3
+      .row
+        h5#thongbao NULL
+      .row
+        h5 Chế độ tưới:
+          #pumbMode.badge.badge-dark.ml-2.mr-2 None
+          button#changemode.btn.btn-warning.btn-sm Change Mode
+      .row
+        h5 Trạng thái máy bơm:
+          #pumbStatus.badge.badge-dark.ml-2 None
+      .row
+        h5.mr-2 Điều khiển máy bơm:
+        button#pumbControl.btn.mr-2 NULL
+
+
 
 
 

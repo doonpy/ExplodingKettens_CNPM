@@ -69,6 +69,31 @@ $(document).ready(function () {
         updateChart(data.date, parseInt(data.value));
     });
 
+    //Vòng lặp gửi yêu cầu lấy thông tin
+    socket.emit('getInfomation', '');
+    setInterval(() => {
+        socket.emit('getInfomation', '');
+    }, 5000);
+
+    socket.on('resInfomation', (data) => {
+        $("#pumbMode").text(data.pumbMode == true ? "Auto" : "Manual");
+        $("#pumbStatus").text(data.pumbStatus == 1 ? "On" : "Off");
+        if (data.pumbStatus == 1) {
+            $("#pumbControl").text('Tắt');
+            $("#pumbControl").removeClass('btn-success');
+            $("#pumbControl").addClass('btn-danger');
+        }
+        else {
+            $("#pumbControl").text('Mở');
+            $("#pumbControl").addClass('btn-success');
+            $("#pumbControl").removeClass('btn-danger');
+        }
+    });
+
+    socket.on('resResult', (data) => {
+        $("#thongbao").text(data.msg);
+    })
+
     //Clear database
     $("#clearDB").click(() => {
         $.ajax({
@@ -98,4 +123,13 @@ $(document).ready(function () {
         };
         alert("Yep!");
     })
+
+    //Thay đổi mode
+    $("#changemode").click(() => {
+        socket.emit('setPumbMode', '');
+    });
+
+    $("#pumbControl").click(() => {
+        socket.emit('controlPumb', '');
+    });
 });
