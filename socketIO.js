@@ -11,7 +11,7 @@ function socketIO(server) {
 
     var deviceList = new Array();
     var userList = new Array();
-    let timeCount;
+
 
     //Namespace là Server
     io.on('connection', (socket) => {
@@ -19,23 +19,23 @@ function socketIO(server) {
         socket.emit("getAuthorization", '');
 
         //Đếm ngược nếu ko trả lời
-        timeCount = setTimeout(() => {
-            socket.disconnect();
-        }, 60 * 1000 * 1);
+        //let timeCount = setTimeout(() => {
+        //     socket.disconnect();
+        // }, 60 * 1000 * 1);
 
-        socket.on("resAuthorization", (data) => {
+        socket.on("resAuthorization", (auth) => {
             //Kết nối được thì clear
-            clearTimeout(timeCount);
-            data.id = socket.id;
+            // clearTimeout(timeCount);
+            auth.id = socket.id;
             //type: false - device; true - user
-            console.log(`--> Connected: Id: ${data.id} - Type: ${data.type}`);
+            console.log(`--> Connected: Id: ${auth.id} - Type: ${auth.type}`);
 
-            if (data.type == false) {
-                deviceList.push(data);
+            if (auth.type == false) {
+                deviceList.push(auth);
                 socket.join('device');
             }
-            if (data.type == true) {
-                userList.push(data);
+            if (auth.type == true) {
+                userList.push(auth);
                 socket.join('user');
             }
 
@@ -86,8 +86,13 @@ function socketIO(server) {
 
             //Khi socket client bị mất kết nối thì chạy hàm sau.
             socket.on('disconnect', function () {
-                console.log(`--> Disconnected: ${data}`); 	//in ra màn hình console cho vui
-
+                console.log(`--> Disconnected: ${auth.id}`); 	//in ra màn hình console cho vui
+                if (auth.type == true)
+                    userList.splice(userList.findIndex(u => { return u.id == auth.id }), 1);
+                else
+                    deviceList.splice(deviceList.findIndex(d => { return d.id == auth.id }), 1);
+                console.log(deviceList);
+                console.log(userList);
             })
 
         });

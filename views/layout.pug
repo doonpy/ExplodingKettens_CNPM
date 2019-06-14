@@ -5,6 +5,12 @@ html
     link(rel='stylesheet', href='/stylesheets/style.css')
     script(src="https://canvasjs.com/assets/script/canvasjs.min.js")
     script(src='/socket.io/socket.io.js')
-    script(src='javascripts/main.js')
+    //- script(src='javascripts/main.js')
   body
     block content
+    script.
+      const socket = io();
+      socket.on('getAuthorization', () => {
+        let data = { "type": true, "userid": "NULL" };
+        socket.emit('resAuthorization', data);
+      });
