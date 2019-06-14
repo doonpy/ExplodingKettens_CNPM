@@ -1,42 +1,18 @@
 extends layout
-
 block content
   h1= title
-  p.display-4 Danh sách độ ẩm theo thời gian
+  p.display-4 Danh sách thiết bị đang kết nối
   .row
-    .col-md-4
-      ul#list
-        each val, index in mositureList
-          li.row #{index+1}.&nbsp; 
-            p Thời gian:&nbsp;
-            p #{val.date_formatted}
-            p &nbsp;---&nbsp;
-            p  Độ ẩm:&nbsp;
-            p #{val.value}
-            p %
-            p(style="display:none") #{val.date}
-    .col-md
-      #chartContainer(style="height: 370px; width:100%;")
-      button#clearDB.btn.btn-danger.btn-block.mt-5 Clear DB
-      button#switchCon.btn.btn-dark.btn-block.mt-3 Disconnect
-    .col-sm-3
-      .row
-        h5#thongbao NULL
-      .row
-        h5 Chế độ tưới:
-          #pumbMode.badge.badge-dark.ml-2.mr-2 None
-          button#changemode.btn.btn-warning.btn-sm Change Mode
-      .row
-        h5 Trạng thái máy bơm:
-          #pumbStatus.badge.badge-dark.ml-2 None
-      .row
-        h5.mr-2 Điều khiển máy bơm:
-        button#pumbControl.btn.mr-2 NULL
-      .row
-        h5.mr-2 Phiên bản firmware:
-        button#updateFW.btn.btn-block.btn-primary Cập nhật phiên bản mới
-
-
-
-
+    #listdevice.col-md-4
+      //- a.btn.btn-outline-secondary.btn-lg.mr-3.mb-3
+      //-   img.icon(src="https://png.pngtree.com/svg/20170103/04ff1a209d.svg")
+      //-   |&nbsp;00:00:00:00:00:00
+    #properties.col-md
+      h3 MOSITURE
+        #mositure.ml-2.badge.badge-primary NULL
+      h3 MODE
+        #pumbMode.ml-2.badge.badge-info NULL
+        button.ml-3.btn.btn-warning Change mode
+      h3 PUMB
+        #pumbStatus.ml-2.badge.badge-success NULL
 

@@ -11,3 +11,7 @@ a {
   overflow: scroll;
   height: 30vmax;
 }
+
+#listdevice .icon{
+  width: 4rem;
+}

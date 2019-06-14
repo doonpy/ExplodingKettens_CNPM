@@ -93,4 +93,4 @@ function onListening() {
 
 //============================================= SOCKET SERVER =====================================================
 
-require('../socketIO')(server);
+var socket = require('../socketIO').socketIO(server);
