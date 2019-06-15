@@ -12,7 +12,6 @@ module.exports = socketIO = (server) => {
     var userList = new Array();
 
     io.on("connection", (socket) => {
-        console.log("Đũy Ka vừa connect");
         //check và phân loại
         socket.emit("getAuth", "");
 
@@ -22,15 +21,17 @@ module.exports = socketIO = (server) => {
         }, 60 * 1000 * 1);
 
         socket.on("resAuth", (auth) => {
+
             //Kết nối được thì clear
             clearTimeout(timeCount);
             socket.type = auth.type;
             auth.id = socket.id;
             //type: false - device; true - user
-            console.log(`--> Connected: Id: ${auth.id} - Type: ${auth.type == true ? "User" : "Device"}`);
+            console.log(`--> Connected: ID: ${auth.id} - Type: ${auth.type == true ? "User" : "Device"}`);
 
             if (auth.type == false) {
                 deviceList.push(auth);
+                // deviceList.push(auth);
                 socket.join("device");
                 io.in("user").emit("listDevice", deviceList);
             }
@@ -44,33 +45,42 @@ module.exports = socketIO = (server) => {
 
         // //Lắng nghe độ ẩm trả về
         socket.on("resMositure", (data) => {
+
             //Nhận được thì in ra thôi hihi.
             data.time = data.time.replace(/\n/g, "");   //xóa \n thôi chứ hok có gì
-            console.log(data);
+            // console.log(data);
+            io.to(`${data.idSent}`).emit("resMositure", data);
 
             // mositureController.addMositure(new Date(), data.mositure);
-            socket.to("user").emit("resMositure", {
-                date: new Date(),
-                date_formatted: moment(new Date(data.time)).format("HH:mm:ss DD/MM/YYYY"),
-                value: data.value
+            io.to(`${data.idSent}`).emit("resMositure", {
+                time: moment(new Date(data.time)).format("HH:mm:ss DD/MM/YYYY"),
+                value: data.value,
+                status: data.status
             });
         });
 
         //Lắng nghe thông tin trả về
         socket.on("resInfomation", (data) => {
             io.to(`${data.idSent}`).emit("resInfomation", data);
-            console.log(data);
+            // console.log(data);
         })
 
         //Lắng nghe kết quả trả về
-        socket.on("resResult", (data) => {
-            console.log(data);
+        socket.on("resResult", (result) => {
+            console.log(result);
+            // io.to(`${result.idSent}`).emit("resResult", result);
             // socket.emit("resResult", data);
         });
 
         //Lắng nghe lỗi trả về
-        socket.on("resError", (data) => {
-            console.log(data);
+        socket.on("resError", (err) => {
+            console.log(err);
+            // io.to(`${err.idSent}`).emit("resError", err);
+        });
+
+        //Lắng nghe yêu cầu lấy độ ẩm
+        socket.on("getMositure", (packet) => {
+            io.to(packet.idRec).emit("getMositure", { idSent: packet.idSent });
         });
 
         //Lắng nghe thông tin
@@ -79,13 +89,14 @@ module.exports = socketIO = (server) => {
         });
 
         //Thay đổi chế độ tưới
-        socket.on("setCommand", (data) => {
-            socket.to("device").emit("setCommand", data);
+        socket.on("setCommand", (packet) => {
+            console.log(packet);
+            socket.to(packet.idRec).emit("setCommand", packet.data);
         })
 
         //Update firmware
-        socket.on("updateFirmware", () => {
-            socket.to("device").emit("updateFirmware", "");
+        socket.on("updateFirmware", (packet) => {
+            socket.to(packet.idRec).emit("updateFirmware", { idSent: packet.idSent });
         })
 
         //Khi socket client bị mất kết nối thì chạy hàm sau.

@@ -1,7 +1,9 @@
 $(document).ready(() => {
     const socket = io();
+    var device = new Object();
     let auth = { "type": true, "userid": "NULL" };
     socket.on("getAuth", () => {
+        $("#myid").text(socket.id);
         socket.emit("resAuth", auth);
     });
 
@@ -19,17 +21,45 @@ $(document).ready(() => {
         listDevice.append(child);
 
         $("#listdevice a").click((e) => {
+            $("#deviceMac").text($(e.currentTarget).text());
             let id = $(`${e.target} input[name=id]`).val();
             let packet = { idSent: socket.id, idRec: id };
             socket.emit('getInfomation', packet);
-            console.log(packet);
+            console.table(packet);
+            // var mositureInt = setInterval(() => {
+            //     // let packet = { idSent: socket.id, idRec: id };
+            //     socket.emit("getMositure", packet);
+            // }, 3000);
+            $("#changeMode").bind('click');
+            $("#changeMode").click(() => {
+                device.pumbMode = device.pumbMode == true ? false : true;
+                let packet = {
+                    idRec: id, data: {
+                        idSent: socket.id,
+                        pumbMode: device.pumbMode,
+                        pumbStatus: device.pumbStatus,
+                        mositureMin: device.mositureMin
+                    }
+                };
+                socket.emit("setCommand", packet);
+            });
         });
     });
 
     //Nghe phản hồi getInfomation
     socket.on("resInfomation", (data) => {
+        device.pumbMode = data.pumbMode;
+        device.pumbStatus = data.pumbStatus;
+        device.mositureMin = data.mositureMin;
+
+        console.table(device);
         $("#pumbMode").text(data.pumbMode == true ? "AUTO" : "MANUAL");
         $("#pumbStatus").text(data.pumbStatus == true ? "ACTIVE" : "UNACTIVE");
         $("#pumbStatus").attr('class', data.pumbStatus == true ? "badge badge-success" : "badge badge-danger");
+        $("#mositureMin").text(data.mositureMin + "%");
+    });
+
+    socket.on("resMositure", (data) => {
+        $("#mositure").text(data.value + "%");
     });
 })
