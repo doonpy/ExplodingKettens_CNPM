@@ -12,7 +12,6 @@ module.exports = socketIO = (server) => {
     var userList = new Array();
 
     io.on("connection", (socket) => {
-        console.log("Đũy Ka vừa connect");
         //check và phân loại
         socket.emit("getAuth", "");
 
