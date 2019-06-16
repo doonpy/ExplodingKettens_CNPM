@@ -1,8 +1,21 @@
 const socket = require("socket.io");
+const uid = require('uid');
 const ip = require("ip");
 const moment = require("moment");
 const mositureController = require("./controllers/mositureController");
 var io;
+
+var countID = (stringID) => {
+    if (stringID == undefined)
+        stringID = "NULL";
+    // stringID = stringID | "NULL";
+    let temp = 0;
+    for (var i = 0; i < stringID.length; i++) {
+        // console.log(packet.idSent[i]);
+        temp += stringID[i].charCodeAt(0);
+    }
+    return temp;
+}
 
 module.exports = socketIO = (server) => {
     io = socket(server);
@@ -12,6 +25,7 @@ module.exports = socketIO = (server) => {
     var userList = new Array();
 
     io.on("connection", (socket) => {
+        // console.log((`setCMD {"idSent":"vX3sfb3hHV45N1NJAAAL","pumbMode":false,"pumbS`).length);
         //check và phân loại
         socket.emit("getAuth", "");
 
@@ -36,6 +50,7 @@ module.exports = socketIO = (server) => {
                 io.in("user").emit("listDevice", deviceList);
             }
             if (auth.type == true) {
+                auth.idCmd = uid(5);
                 userList.push(auth);
                 socket.join("user");
                 //Gửi danh sách device đang kết nối
@@ -45,14 +60,19 @@ module.exports = socketIO = (server) => {
 
         // //Lắng nghe độ ẩm trả về
         socket.on("resMositure", (data) => {
-
+            console.log(data);
+            let idSent;
+            userList.forEach(u => {
+                if (countID(u.id) == data.idSent)
+                    idSent = u.id;
+            });
             //Nhận được thì in ra thôi hihi.
             data.time = data.time.replace(/\n/g, "");   //xóa \n thôi chứ hok có gì
             // console.log(data);
-            io.to(`${data.idSent}`).emit("resMositure", data);
+            // io.to(`${idSent}`).emit("resMositure", data);
 
             // mositureController.addMositure(new Date(), data.mositure);
-            io.to(`${data.idSent}`).emit("resMositure", {
+            io.to(idSent).emit("resMositure", {
                 time: moment(new Date(data.time)).format("HH:mm:ss DD/MM/YYYY"),
                 value: data.value,
                 status: data.status
@@ -61,36 +81,61 @@ module.exports = socketIO = (server) => {
 
         //Lắng nghe thông tin trả về
         socket.on("resInfomation", (data) => {
-            io.to(`${data.idSent}`).emit("resInfomation", data);
+            console.log(data);
+            let idSent;
+            userList.forEach(u => {
+                if (countID(u.id) == data.idSent)
+                    idSent = u.id;
+            });
+            //convert lai
+            let temp = {
+                "idSent": idSent,
+                "status": data.status,
+                "pumbMode": data.PM,
+                "pumbStatus": data.PS,
+                "mositureMin": data.MM
+            };
+            io.to(`${temp.idSent}`).emit("resInfomation", temp);
             // console.log(data);
         })
 
         //Lắng nghe kết quả trả về
         socket.on("resResult", (result) => {
             console.log(result);
-            // io.to(`${result.idSent}`).emit("resResult", result);
+            let idSent;
+            userList.forEach(u => {
+                if (countID(u.id) == result.idSent)
+                    idSent = u.id;
+            });
+            io.to(idSent).emit("resResult", result);
             // socket.emit("resResult", data);
         });
 
         //Lắng nghe lỗi trả về
         socket.on("resError", (err) => {
             console.log(err);
-            // io.to(`${err.idSent}`).emit("resError", err);
+            // socket.in("user").emit("resError", err);
         });
 
         //Lắng nghe yêu cầu lấy độ ẩm
         socket.on("getMositure", (packet) => {
-            io.to(packet.idRec).emit("getMositure", { idSent: packet.idSent });
+            // console.log(packet);
+            let temp = countID(packet.idSent);
+            io.to(packet.idRec).emit("getMositure", { idSent: temp });
         });
 
         //Lắng nghe thông tin
         socket.on("getInfomation", (packet) => {
-            io.to(packet.idRec).emit("getInfomation", { idSent: packet.idSent });
+            let temp = countID(packet.idSent);
+            io.to(packet.idRec).emit("getInfomation", { idSent: temp });
         });
 
         //Thay đổi chế độ tưới
         socket.on("setCommand", (packet) => {
             console.log(packet);
+            let temp = countID(packet.idSent);
+            packet.data.IS = temp;
+            // console.log(packet);
             socket.to(packet.idRec).emit("setCommand", packet.data);
         })
 

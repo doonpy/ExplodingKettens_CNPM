@@ -30,20 +30,23 @@ $(document).ready(() => {
             //     // let packet = { idSent: socket.id, idRec: id };
             //     socket.emit("getMositure", packet);
             // }, 3000);
-            $("#changeMode").bind('click');
+            $("#changeMode").unbind('click');
             $("#changeMode").click(() => {
                 device.pumbMode = device.pumbMode == true ? false : true;
                 let packet = {
-                    idRec: id, data: {
-                        idSent: socket.id,
-                        pumbMode: device.pumbMode,
-                        pumbStatus: device.pumbStatus,
-                        mositureMin: device.mositureMin
+                    idRec: id,
+                    idSent: socket.id,
+                    data: {
+                        IS: "",
+                        PM: device.pumbMode,
+                        PS: device.pumbStatus,
+                        MM: device.mositureMin
                     }
                 };
                 socket.emit("setCommand", packet);
             });
         });
+
     });
 
     //Nghe phản hồi getInfomation
@@ -62,4 +65,8 @@ $(document).ready(() => {
     socket.on("resMositure", (data) => {
         $("#mositure").text(data.value + "%");
     });
+
+    socket.on("resError", (data) => {
+        alert(data.msg);
+    })
 })
